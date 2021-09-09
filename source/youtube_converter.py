@@ -161,9 +161,9 @@ def handle_menu_click():
 
 if __name__ == '__main__':
     # sg.theme_previewer()
-    version = '2021.1.1.1'
+    version = '1.1'
     sg.theme("DarkGrey14")
-    window = sg.Window("Youtube Converter", get_layout())
+    window = sg.Window("Youtube Converter v" + version, get_layout())
     while True:
         event, values = window.read()
         if event == "Exit" or event == sg.WIN_CLOSED:
