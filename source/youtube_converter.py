@@ -97,11 +97,13 @@ def convert_to_format(videos, v_num, audio_format):
 
     new_filename = find_filename(filename, audio_format)
 
+    si = subprocess.STARTUPINFO()
+    si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     subprocess.run([
         './ffmpeg/ffmpeg',
         '-i', os.path.join(directory, default_filename),
         os.path.join(directory, new_filename)
-    ])
+    ], startupinfo=si)
     if not values["KEEP"]:
         mp4_file = directory + "\\" + default_filename
         os.remove(mp4_file)
@@ -140,7 +142,7 @@ def handle_menu_click():
     font = ('Helvetica', 10, 'underline')
     popup_layout = [
         [
-            sg.Text("YouTube Converter V" + version + "\n"
+            sg.Text("YouTube Converter " + version + "\n"
                     "(built on September 09, 2021)\n")
         ],
         [
@@ -161,9 +163,9 @@ def handle_menu_click():
 
 if __name__ == '__main__':
     # sg.theme_previewer()
-    version = '1.1'
+    version = 'v1.1'
     sg.theme("DarkGrey14")
-    window = sg.Window("Youtube Converter v" + version, get_layout())
+    window = sg.Window("Youtube Converter " + version, get_layout())
     while True:
         event, values = window.read()
         if event == "Exit" or event == sg.WIN_CLOSED:
