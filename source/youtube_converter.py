@@ -2,6 +2,7 @@ import os
 import os.path
 import re
 import subprocess
+import webbrowser
 from os import listdir
 from os.path import isfile, join
 
@@ -133,12 +134,34 @@ def download_and_convert():
 
 # ------------------------- main -------------------------
 def handle_menu_click():
-    sg.popup("YouTube Converter 2021.1.1\n"
-             "(built on August 23, 2021)")
+    urls = {
+        'Github': 'https://github.com/NicSchu/YouTubeConverter'
+    }
+    font = ('Helvetica', 10, 'underline')
+    popup_layout = [
+        [
+            sg.Text("YouTube Converter V" + version + "\n"
+                    "(built on September 09, 2021)\n")
+        ],
+        [
+            sg.Text("Check out my Github page for updates", text_color='yellow', font=font, enable_events=True,
+                    key=f'URL {urls["Github"]}')
+        ]
+    ]
+    popup_window = sg.Window("About", popup_layout, modal=True)
+    while True:
+        p_event, p_values = popup_window.read()
+        if p_event == "Exit" or p_values == sg.WIN_CLOSED or p_event is None:
+            break
+        elif p_event.startswith("URL "):
+            url = p_event.split(' ')[1]
+            webbrowser.open(url)
+    popup_window.close()
 
 
 if __name__ == '__main__':
     # sg.theme_previewer()
+    version = '2021.1.1.1'
     sg.theme("DarkGrey14")
     window = sg.Window("Youtube Converter", get_layout())
     while True:
