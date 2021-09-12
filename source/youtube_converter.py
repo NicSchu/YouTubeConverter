@@ -31,7 +31,6 @@ def get_layout():
                 [sg.Text("Format:")],
                 [sg.Radio("mp3", "FORMAT", default=True, key="MP3")],
                 [sg.Radio("wav", "FORMAT", key="WAV")]
-                # sg.Checkbox("Convert to mp3", default=True, key="CONVERT"),
             ])
         ],
         [
