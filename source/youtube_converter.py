@@ -5,8 +5,9 @@ import subprocess
 import webbrowser
 from os import listdir
 from os.path import isfile, join
+from tkinter import Tk
 
-import PySimpleGUI as sg
+import PySimpleGUI as Sg
 from pytube import YouTube
 
 
@@ -14,38 +15,38 @@ from pytube import YouTube
 def get_layout():
     input_col = [
         [
-            sg.Text("Download Folder", size=(15, 1)),
-            sg.In(default_text=get_download_folder(), size=(25, 1), enable_events=True, key="FOLDER"),
-            sg.FolderBrowse()
+            Sg.Text("Download Folder", size=(15, 1)),
+            Sg.In(default_text=get_download_folder(), size=(25, 1), enable_events=True, key="FOLDER"),
+            Sg.FolderBrowse()
         ],
         [
-            sg.Text("Youtube Link", size=(15, 1)),
-            sg.In(size=(25, 1), key="LINK")
+            Sg.Text("Youtube Link", size=(15, 1)),
+            Sg.In(size=(25, 1), key="LINK", right_click_menu=['&Right', ['Copy', 'Paste', 'Clear']])
         ],
         [
-            sg.Column([
-                [sg.Checkbox("Keep mp4?", default=False, key="KEEP")],
-                [sg.Checkbox("Open Download Folder?", default=True, key="OPEN")]
+            Sg.Column([
+                [Sg.Checkbox("Keep mp4?", default=False, key="KEEP")],
+                [Sg.Checkbox("Open Download Folder?", default=True, key="OPEN")]
             ]),
-            sg.Column([
-                [sg.Text("Format:")],
-                [sg.Radio("mp3", "FORMAT", default=True, key="MP3")],
-                [sg.Radio("wav", "FORMAT", key="WAV")]
+            Sg.Column([
+                [Sg.Text("Format:")],
+                [Sg.Radio("mp3", "FORMAT", default=True, key="MP3")],
+                [Sg.Radio("wav", "FORMAT", key="WAV")]
             ])
         ],
         [
-            sg.Button("Download and convert", key="DOWNLOAD")
+            Sg.Button("Download and convert", key="DOWNLOAD")
         ],
     ]
     menu = [[
              "Help", "About"
     ]]
-    output_col = [[sg.Multiline(key='OUT', size=(50, 10), background_color='black', pad=((5, 0), (5, 5)))]]
+    output_col = [[Sg.Multiline(key='OUT', size=(50, 10), background_color='black', pad=((5, 0), (5, 5)))]]
     return [[
-        sg.Menu(menu, background_color="darkgrey", key="MENU"),
-        sg.Column(input_col),
-        sg.VSeparator(),
-        sg.Column(output_col)
+        Sg.Menu(menu, background_color="darkgrey", key="MENU"),
+        Sg.Column(input_col),
+        Sg.VSeparator(),
+        Sg.Column(output_col)
     ]]
 
 
@@ -141,18 +142,18 @@ def handle_menu_click():
     font = ('Helvetica', 10, 'underline')
     popup_layout = [
         [
-            sg.Text("YouTube Converter " + version + "\n"
+            Sg.Text("YouTube Converter " + version + "\n"
                     "(built on September 09, 2021)\n")
         ],
         [
-            sg.Text("Check out my Github page for updates", text_color='yellow', font=font, enable_events=True,
+            Sg.Text("Check out my Github page for updates", text_color='yellow', font=font, enable_events=True,
                     key=f'URL {urls["Github"]}')
         ]
     ]
-    popup_window = sg.Window("About", popup_layout, modal=True)
+    popup_window = Sg.Window("About", popup_layout, modal=True)
     while True:
         p_event, p_values = popup_window.read()
-        if p_event == "Exit" or p_values == sg.WIN_CLOSED or p_event is None:
+        if p_event == "Exit" or p_values == Sg.WIN_CLOSED or p_event is None:
             break
         elif p_event.startswith("URL "):
             url = p_event.split(' ')[1]
@@ -160,14 +161,31 @@ def handle_menu_click():
     popup_window.close()
 
 
+def copy_to_clipboard(to_copy):
+    r = Tk()
+    r.withdraw()
+    r.clipboard_clear()
+    r.clipboard_append(to_copy)
+    r.update()
+    r.destroy()
+
+
+def get_from_clipboard():
+    r = Tk()
+    r.withdraw()
+    clipped = r.clipboard_get()
+    r. destroy()
+    return clipped
+
+
 if __name__ == '__main__':
     # sg.theme_previewer()
     version = 'v1.1'
-    sg.theme("DarkGrey14")
-    window = sg.Window("Youtube Converter " + version, get_layout())
+    Sg.theme("DarkGrey14")
+    window = Sg.Window("Youtube Converter " + version, get_layout())
     while True:
         event, values = window.read()
-        if event == "Exit" or event == sg.WIN_CLOSED:
+        if event == "Exit" or event == Sg.WIN_CLOSED:
             break
         elif event == "DOWNLOAD":
             link = values["LINK"]
@@ -180,4 +198,10 @@ if __name__ == '__main__':
                 download_and_convert()
         elif event == "About":
             handle_menu_click()
+        elif event == 'Copy':
+            copy_to_clipboard(values['LINK'])
+        elif event == 'Paste':
+            window['LINK'].update(get_from_clipboard())
+        elif event == 'Clear':
+            window['LINK'].update('')
     window.close()
