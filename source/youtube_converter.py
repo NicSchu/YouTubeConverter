@@ -6,6 +6,7 @@ import webbrowser
 from os import listdir
 from os.path import isfile, join
 from tkinter import Tk
+import threading
 
 import PySimpleGUI as Sg
 from pytube import YouTube
@@ -13,11 +14,15 @@ from pytube import YouTube
 
 # ------------------------- layout -------------------------
 def get_layout():
+    progress_bar = [
+        [Sg.ProgressBar(100, size=(16, 20), pad=(0, 0), key='PROGRESSBAR', bar_color=('green', 'white')),
+         Sg.Text("  0%", size=(4, 1), key='PERCENT')],
+    ]
     input_col = [
         [
             Sg.Text("Download Folder", size=(15, 1)),
             Sg.In(default_text=get_download_folder(), size=(25, 1), enable_events=True, key="FOLDER"),
-            Sg.FolderBrowse()
+            Sg.FolderBrowse(key="BROWSE")
         ],
         [
             Sg.Text("Youtube Link", size=(15, 1)),
@@ -35,7 +40,8 @@ def get_layout():
             ])
         ],
         [
-            Sg.Button("Download and convert", key="DOWNLOAD")
+            Sg.Button("Download and convert", key="DOWNLOAD"),
+            Sg.pin(Sg.Column(progress_bar, key='PROGRESS', visible=False))
         ],
     ]
     menu = [[
@@ -64,12 +70,10 @@ def is_correct_url(url):
 
 
 # ------------------------- video download and converting -------------------------
-def download_mp4(videos):
-    # v_num = int(input("Enter vid num: "))
-    v_num = 0
+def download_mp4(video):
     parent_dir = r"" + directory
-    videos[v_num].download(parent_dir)
-    return videos, v_num
+    video.download(parent_dir)
+    return video
 
 
 def get_youtube_object(youtube_link):
@@ -90,28 +94,64 @@ def find_filename(filename, ending):
     return new_filename
 
 
-def convert_to_format(videos, v_num, audio_format):
+def get_time_code(line):
+    _list = line.replace(',', '').replace('=', ' ').split()
+    pattern = re.compile(r"[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{2}")
+    for element in _list:
+        if pattern.match(element):
+            return element
+    return None
 
-    default_filename = videos[v_num].default_filename
+
+def get_time_code_in_seconds(time_code):
+    times = time_code.split(':')
+    return round(float(times[2])) + (int(times[1]) * 60) + (int(times[0]) * 3600)
+
+
+def convert_progress(line, duration):
+    if 'size=' in line:
+        seconds_done = get_time_code_in_seconds(get_time_code(line))
+        percent_value = ((50 * seconds_done) / duration) + 50
+        window["PROGRESSBAR"].update(current_count=percent_value)
+        window["PERCENT"].update(value=f'%.0f' % percent_value + '%')
+        window.refresh()
+
+
+def convert_to_format(video, audio_format, duration):
+    default_filename = video.default_filename
     filename = default_filename.rsplit('.')[0]
 
     new_filename = find_filename(filename, audio_format)
+    command = './ffmpeg/ffmpeg -i "%s" "%s"' % (os.path.join(directory, default_filename),
+                                                os.path.join(directory, new_filename))
+    process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, universal_newlines=True, startupinfo=subprocess.STARTUPINFO())
+    for line in process.stdout:
+        convert_progress(line, duration)
 
-    si = subprocess.STARTUPINFO()
-    si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    subprocess.run([
-        './ffmpeg/ffmpeg',
-        '-i', os.path.join(directory, default_filename),
-        os.path.join(directory, new_filename)
-    ], startupinfo=si)
     if not values["KEEP"]:
         mp4_file = directory + "\\" + default_filename
         os.remove(mp4_file)
 
 
-# ------------------------- little helper -------------------------
+# ------------------------- helper -------------------------
 def print_to_multi(text, color):
     window["OUT"].print(text, text_color=color)
+
+
+def get_clickable_elements():
+    return ["MP3", "WAV", "KEEP", "OPEN", "LINK", "FOLDER", "BROWSE", "DOWNLOAD"]
+
+
+def reset_progress_bar():
+    window["PROGRESSBAR"].update(current_count=0)
+    window["PERCENT"].update(value=f'%.0f' % 0 + '%')
+
+
+def switch_elements_disabled(disabled):
+    reset_progress_bar()
+    for element in get_clickable_elements():
+        window[element].update(disabled=disabled)
 
 
 def get_download_folder():
@@ -124,12 +164,28 @@ def open_download_folder():
     os.startfile(directory)
 
 
+def progressbar(stream=None, chunk=None, remaining=None):
+    percent_value = (50 * (stream.filesize - remaining)) / stream.filesize
+    window["PROGRESSBAR"].update(current_count=percent_value)
+    window["PERCENT"].update(value=f'%.0f' % percent_value + '%')
+    window.refresh()
+
+
+def complete():
+    window["PROGRESS"].update(visible=False)
+
+
 def download_and_convert():
-    yt, videos = get_youtube_object(values["LINK"])
+    switch_elements_disabled(True)
+    window["PROGRESS"].update(visible=True)
+    yt = YouTube(values["LINK"], on_progress_callback=progressbar)
     print_to_multi(yt.title, "white")
-    videos, v_num = download_mp4(videos)
+    video = yt.streams.filter(progressive=True, file_extension='mp4').first()
+    video = download_mp4(video)
     audio_format = '.mp3' if values["MP3"] else '.wav'
-    convert_to_format(videos, v_num, audio_format)
+    convert_to_format(video, audio_format, yt.length)
+    switch_elements_disabled(False)
+    complete()
     if values["OPEN"]:
         open_download_folder()
 
@@ -180,7 +236,7 @@ def get_from_clipboard():
 
 if __name__ == '__main__':
     # sg.theme_previewer()
-    version = 'v1.1'
+    version = 'v1.2'
     Sg.theme("DarkGrey14")
     window = Sg.Window("Youtube Converter " + version, get_layout())
     while True:
@@ -191,11 +247,12 @@ if __name__ == '__main__':
             link = values["LINK"]
             directory = values["FOLDER"]
             if link == "" or not is_correct_url(link):
-                print_to_multi("Bitte richtigen YouTube Link eingeben!", "red")
+                print_to_multi("Bitte korrekten YouTube Link eingeben!", "red")
             elif directory == "":
                 print_to_multi("Bitte Downloadpfad eingeben!", "red")
             else:
-                download_and_convert()
+                thread = threading.Thread(target=download_and_convert, daemon=True)
+                thread.start()
         elif event == "About":
             handle_menu_click()
         elif event == 'Copy':

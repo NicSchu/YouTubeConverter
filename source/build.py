@@ -21,6 +21,6 @@ def build_normal():
 
 
 if __name__ == '__main__':
-    version = 'v-test'
+    version = 'v1.2'
     build_one_file()
     build_normal()
