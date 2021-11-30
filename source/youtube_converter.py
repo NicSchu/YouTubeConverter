@@ -124,7 +124,7 @@ def convert_to_format(video, audio_format, duration):
     new_filename = find_filename(filename, audio_format)
     command = './ffmpeg/ffmpeg -i "%s" "%s"' % (os.path.join(directory, default_filename),
                                                 os.path.join(directory, new_filename))
-    process = subprocess.Popen(command, stdout=subprocess.PIPE,
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW,
                                stderr=subprocess.STDOUT, universal_newlines=True, startupinfo=subprocess.STARTUPINFO())
     for line in process.stdout:
         convert_progress(line, duration)
@@ -143,15 +143,21 @@ def get_clickable_elements():
     return ["MP3", "WAV", "KEEP", "OPEN", "LINK", "FOLDER", "BROWSE", "DOWNLOAD"]
 
 
-def reset_progress_bar():
-    window["PROGRESSBAR"].update(current_count=0)
-    window["PERCENT"].update(value=f'%.0f' % 0 + '%')
-
-
 def switch_elements_disabled(disabled):
     reset_progress_bar()
     for element in get_clickable_elements():
         window[element].update(disabled=disabled)
+    if disabled:
+        window["LINK"].update(text_color="black")
+        window["FOLDER"].update(text_color="black")
+    else:
+        window["LINK"].update(text_color="white")
+        window["FOLDER"].update(text_color="white")
+
+
+def reset_progress_bar():
+    window["PROGRESSBAR"].update(current_count=0)
+    window["PERCENT"].update(value=f'%.0f' % 0 + '%')
 
 
 def get_download_folder():
@@ -236,7 +242,7 @@ def get_from_clipboard():
 
 if __name__ == '__main__':
     # sg.theme_previewer()
-    version = 'v1.2'
+    version = 'v1.2.1'
     Sg.theme("DarkGrey14")
     window = Sg.Window("Youtube Converter " + version, get_layout())
     while True:
