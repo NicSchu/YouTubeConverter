@@ -1,12 +1,13 @@
+import datetime
 import os
 import os.path
 import re
 import subprocess
+import threading
 import webbrowser
 from os import listdir
 from os.path import isfile, join
 from tkinter import Tk
-import threading
 
 import PySimpleGUI as Sg
 from pytube import YouTube
@@ -196,33 +197,6 @@ def download_and_convert():
         open_download_folder()
 
 
-# ------------------------- main -------------------------
-def handle_menu_click():
-    urls = {
-        'Github': 'https://github.com/NicSchu/YouTubeConverter'
-    }
-    font = ('Helvetica', 10, 'underline')
-    popup_layout = [
-        [
-            Sg.Text("YouTube Converter " + version + "\n"
-                    "(built on September 09, 2021)\n")
-        ],
-        [
-            Sg.Text("Check out my Github page for updates", text_color='yellow', font=font, enable_events=True,
-                    key=f'URL {urls["Github"]}')
-        ]
-    ]
-    popup_window = Sg.Window("About", popup_layout, modal=True)
-    while True:
-        p_event, p_values = popup_window.read()
-        if p_event == "Exit" or p_values == Sg.WIN_CLOSED or p_event is None:
-            break
-        elif p_event.startswith("URL "):
-            url = p_event.split(' ')[1]
-            webbrowser.open(url)
-    popup_window.close()
-
-
 def copy_to_clipboard(to_copy):
     r = Tk()
     r.withdraw()
@@ -240,6 +214,35 @@ def get_from_clipboard():
     return clipped
 
 
+# ------------------------- menu -------------------------
+def handle_menu_click():
+    urls = {
+        'Github': 'https://github.com/NicSchu/YouTubeConverter'
+    }
+    font = ('Helvetica', 10, 'underline')
+    date = datetime.datetime.now()
+    popup_layout = [
+        [
+            Sg.Text("YouTube Converter " + version + "\n"
+                                                     "(built on %s %s, %s)\n" % (date.strftime("%B"), date.strftime("%d"), date.strftime("%Y")))
+        ],
+        [
+            Sg.Text("Check out my Github page for updates", text_color='yellow', font=font, enable_events=True,
+                    key=f'URL {urls["Github"]}')
+        ]
+    ]
+    popup_window = Sg.Window("About", popup_layout, modal=True)
+    while True:
+        p_event, p_values = popup_window.read()
+        if p_event == "Exit" or p_values == Sg.WIN_CLOSED or p_event is None:
+            break
+        elif p_event.startswith("URL "):
+            url = p_event.split(' ')[1]
+            webbrowser.open(url)
+    popup_window.close()
+
+
+# ------------------------- main -------------------------
 if __name__ == '__main__':
     # sg.theme_previewer()
     version = 'v1.2.1'
