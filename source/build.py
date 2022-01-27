@@ -2,6 +2,8 @@ import subprocess
 
 import PyInstaller.__main__
 
+from source.youtube_converter import version
+
 
 def build_one_file():
     PyInstaller.__main__.run([
@@ -21,6 +23,5 @@ def build_normal():
 
 
 if __name__ == '__main__':
-    version = 'v1.2.1'
     build_one_file()
     build_normal()

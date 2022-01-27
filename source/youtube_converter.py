@@ -10,6 +10,7 @@ from os.path import isfile, join
 from tkinter import Tk
 
 import PySimpleGUI as Sg
+import requests
 from pytube import YouTube
 
 
@@ -214,17 +215,35 @@ def get_from_clipboard():
     return clipped
 
 
+def get_latest_tag_version():
+    response = requests.get(latest_version_url)
+    return response.url.split('/')[-1]
+
+
+def check_for_updates(v):
+    if v != get_latest_tag_version():
+        pressed = Sg.popup_yes_no('A newer Version of this ' + software_name + ' is available.\n'
+                                  'For proper functionality please consider downloading the newest version. \n'
+                                  'Do you want to get to the download page?', keep_on_top=True,
+                                  title='Update available')
+        if pressed is None:
+            return False
+        if pressed == 'Yes':
+            webbrowser.open(latest_version_url)
+    return True
+
+
 # ------------------------- menu -------------------------
 def handle_menu_click():
     urls = {
-        'Github': 'https://github.com/NicSchu/YouTubeConverter'
+        'Github': github_repo_url
     }
     font = ('Helvetica', 10, 'underline')
     date = datetime.datetime.now()
     popup_layout = [
         [
-            Sg.Text("YouTube Converter " + version + "\n"
-                                                     "(built on %s %s, %s)\n" % (date.strftime("%B"), date.strftime("%d"), date.strftime("%Y")))
+            Sg.Text(software_name + ' ' + version + "\n"
+                    "(built on %s %s, %s)\n" % (date.strftime("%B"), date.strftime("%d"), date.strftime("%Y")))
         ],
         [
             Sg.Text("Check out my Github page for updates", text_color='yellow', font=font, enable_events=True,
@@ -242,13 +261,20 @@ def handle_menu_click():
     popup_window.close()
 
 
+# ---------------------- variables ----------------------
+version = 'v1.2.3'
+software_name = 'Youtube Converter'
+latest_version_url = 'https://github.com/NicSchu/YouTubeConverter/releases/latest'
+github_repo_url = 'https://github.com/NicSchu/YouTubeConverter'
+
+
 # ------------------------- main -------------------------
 if __name__ == '__main__':
     # sg.theme_previewer()
-    version = 'v1.2.1'
     Sg.theme("DarkGrey14")
-    window = Sg.Window("Youtube Converter " + version, get_layout())
-    while True:
+    window = Sg.Window(software_name + ' ' + version, get_layout())
+    run = check_for_updates(version)
+    while run:
         event, values = window.read()
         if event == "Exit" or event == Sg.WIN_CLOSED:
             break
