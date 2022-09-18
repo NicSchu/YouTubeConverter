@@ -1,5 +1,4 @@
 import subprocess
-
 import PyInstaller.__main__
 
 from source.youtube_converter import version
