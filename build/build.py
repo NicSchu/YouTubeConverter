@@ -6,7 +6,7 @@ from source.youtube_converter import version
 
 def build_one_file():
     PyInstaller.__main__.run([
-        'youtube_converter.py',
+        '../source/youtube_converter.py',
         '--onefile',
         '--windowed'
     ])
@@ -15,7 +15,7 @@ def build_one_file():
 
 def build_normal():
     PyInstaller.__main__.run([
-        'youtube_converter.py',
+        '../source/youtube_converter.py',
         '--windowed'
     ])
     subprocess.call([r'build.bat', version, ''])

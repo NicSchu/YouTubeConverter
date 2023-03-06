@@ -27,7 +27,7 @@ def get_layout():
             Sg.Column([
                 [Sg.Checkbox("Keep mp4", default=False, key="KEEP")],
                 [Sg.Checkbox("Auto open Download Folder", default=True, key="OPEN")],
-                [Sg.Checkbox("Enable Playlist detection", default=True, key="")]
+                [Sg.Checkbox("Enable Playlist detection", default=True, key="PLAYLIST")]
             ]),
             Sg.Column([
                 [Sg.Text("Format:")],
@@ -40,10 +40,10 @@ def get_layout():
             Sg.pin(Sg.Column(progress_bar, key='PROGRESS', visible=False))
         ],
     ]
-    menu = [[
-        "Help", "About"
-    ]]
-    output_col = [[Sg.Multiline(key='OUT', size=(50, 10), background_color='black', pad=((5, 0), (5, 5)))]]
+    menu = [
+        ["Help", ["Settings", "About"]]
+    ]
+    output_col = [[Sg.Multiline(key='OUT', size=(60, 12), background_color='black', pad=((5, 0), (5, 5)))]]
     return [[
         Sg.Menu(menu, background_color="darkgrey", key="MENU"),
         Sg.Column(input_col),
