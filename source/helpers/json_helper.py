@@ -8,13 +8,13 @@ from source.constants import settings_file
 
 
 def save_to_json(values):
-    file = settings_file
-    # with io.open(os.path.join(settings_file, 'Accounts.json'), 'w') as db_file:
-    #     db_file.write(json.dumps({}))
-    with open(file, 'w') as file:
-        file.seek(0)
-        json.dump(values, file)
-        file.truncate()
+    # file = settings_file
+    with io.open(os.path.join(settings_file), 'w') as db_file:
+        db_file.write(json.dumps(values))
+    # with open(file, 'w') as file:
+    #     file.seek(0)
+    #     json.dump(values, file)
+    #     file.truncate()
 
 
 def load_from_json(values):

@@ -13,7 +13,7 @@ from source.components.layout import get_layout
 from source.checks.update_checker import check_for_updates
 from source.checks.url_checker import is_correct_url
 from source.components.popups import playlist_popup
-from source.helpers.json import save_to_json, load_from_json
+from source.helpers.json_helper import save_to_json, load_from_json
 from source.helpers.progress import get_time_code_in_seconds, get_time_code
 from source.helpers.helper import get_from_clipboard, copy_to_clipboard, get_clickable_elements, open_download_folder, \
     find_filename
@@ -144,6 +144,7 @@ if __name__ == '__main__':
     Sg.theme("DarkGrey14")
     window = Sg.Window(software_name + ' ' + version, get_layout())
     run = check_for_updates(version)
+
     # event, values = window.read()
     # values = load_from_json(values)
     while run:
@@ -163,12 +164,13 @@ if __name__ == '__main__':
             handle_about_click()
         elif event == "Settings":
             handle_settings_click(window, values)
+            # if values is not None:
+            #     save_to_json(values)
         elif event == 'Copy':
             copy_to_clipboard(values['LINK'])
         elif event == 'Paste':
             window['LINK'].update(get_from_clipboard())
         elif event == 'Clear':
             window['LINK'].update('')
-    # if values is not None:
-    #     save_to_json(values)
+
     window.close()
