@@ -8,7 +8,7 @@ def get_download_folder():
     return os.path.join(home, "Downloads")
 
 
-def get_layout():
+def get_layout(settings):
     progress_bar = [
         [Sg.ProgressBar(100, size=(16, 20), pad=(0, 0), key='PROGRESSBAR', bar_color=('green', 'white')),
          Sg.Text("  0%", size=(4, 1), key='PERCENT')],
@@ -25,14 +25,14 @@ def get_layout():
         ],
         [
             Sg.Column([
-                [Sg.Checkbox("Keep mp4", default=False, key="KEEP")],
-                [Sg.Checkbox("Auto open Download Folder", default=True, key="OPEN")],
-                [Sg.Checkbox("Enable Playlist detection", default=True, key="PLAYLIST")]
+                [Sg.Checkbox("Keep mp4", default=settings["KEEP"], key="KEEP")],
+                [Sg.Checkbox("Auto open Download Folder", default=settings["OPEN"], key="OPEN")],
+                [Sg.Checkbox("Enable Playlist detection", default=settings["PLAYLIST"], key="PLAYLIST")]
             ]),
             Sg.Column([
                 [Sg.Text("Format:")],
-                [Sg.Radio("mp3", "FORMAT", default=True, key="MP3")],
-                [Sg.Radio("wav", "FORMAT", key="WAV")]
+                [Sg.Radio("mp3", "FORMAT", default=settings["MP3"], key="MP3")],
+                [Sg.Radio("wav", "FORMAT", default=settings["WAV"], key="WAV")]
             ])
         ],
         [
@@ -41,7 +41,8 @@ def get_layout():
         ],
     ]
     menu = [
-        ["Help", ["Settings", "About"]]
+        # ["Help", ["Settings", "About"]]
+        ["Help", ["About"]]
     ]
     output_col = [[Sg.Multiline(key='OUT', size=(60, 12), background_color='black', pad=((5, 0), (5, 5)))]]
     return [[

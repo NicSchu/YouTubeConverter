@@ -142,11 +142,10 @@ def prepare_download():
 if __name__ == '__main__':
     # Sg.theme_previewer()
     Sg.theme("DarkGrey14")
-    window = Sg.Window(software_name + ' ' + version, get_layout())
     run = check_for_updates(version)
+    settings = load_from_json()
+    window = Sg.Window(software_name + ' ' + version, get_layout(settings))
 
-    # event, values = window.read()
-    # values = load_from_json(values)
     while run:
         event, values = window.read()
         if event == "Exit" or event == Sg.WIN_CLOSED:
@@ -164,13 +163,12 @@ if __name__ == '__main__':
             handle_about_click()
         elif event == "Settings":
             handle_settings_click(window, values)
-            # if values is not None:
-            #     save_to_json(values)
         elif event == 'Copy':
             copy_to_clipboard(values['LINK'])
         elif event == 'Paste':
             window['LINK'].update(get_from_clipboard())
         elif event == 'Clear':
             window['LINK'].update('')
+        save_to_json(values)
 
     window.close()
