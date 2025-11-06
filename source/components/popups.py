@@ -1,4 +1,4 @@
-import PySimpleGUI as Sg
+import FreeSimpleGUI as sg
 
 
 def playlist_popup(playlist):

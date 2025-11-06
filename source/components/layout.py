@@ -1,6 +1,6 @@
 import os
 
-import PySimpleGUI as Sg
+import FreeSimpleGUI as sg
 
 
 def get_download_folder():

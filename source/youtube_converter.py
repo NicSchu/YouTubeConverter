@@ -3,7 +3,7 @@ import os.path
 import subprocess
 import threading
 
-import PySimpleGUI as Sg
+import FreeSimpleGUI as sg
 from pytube import YouTube
 from pytube import Playlist
 
@@ -85,7 +85,8 @@ def convert_to_format(video, audio_format, duration):
     command = './ffmpeg/ffmpeg -i "%s" "%s"' % (os.path.join(directory, default_filename),
                                                 os.path.join(directory, new_filename))
     process = subprocess.Popen(command, stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW,
-                               stderr=subprocess.STDOUT, universal_newlines=True, startupinfo=subprocess.STARTUPINFO())
+                               stderr=subprocess.STDOUT, universal_newlines=True, startupinfo=subprocess.STARTUPINFO(),
+                               encoding='utf-8')
     for line in process.stdout:
         convert_progress(line, duration)
 
@@ -115,7 +116,7 @@ def download_thread(playlist):
         for video in p.videos:
             download_and_convert_title(video.watch_url)
             i += 1
-        print_to_multi("\nPlaylist complete")
+        print_to_multi("\nPlaylist complete", "yellow")
     else:
         download_and_convert_title(values["LINK"])
     switch_elements_disabled(False)
@@ -141,14 +142,14 @@ def prepare_download():
 # ------------------------- main -------------------------
 if __name__ == '__main__':
     # Sg.theme_previewer()
-    Sg.theme("DarkGrey14")
+    sg.set_options(theme="DarkGrey14")
     run = check_for_updates(version)
     settings = load_from_json()
-    window = Sg.Window(software_name + ' ' + version, get_layout(settings))
+    window = sg.Window(software_name + ' ' + version, get_layout(settings))
 
     while run:
         event, values = window.read()
-        if event == "Exit" or event == Sg.WIN_CLOSED:
+        if event == "Exit" or event == sg.WIN_CLOSED:
             break
         elif event == "DOWNLOAD":
             link = values["LINK"]

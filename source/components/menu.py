@@ -1,5 +1,5 @@
 import webbrowser
-import PySimpleGUI as Sg
+import FreeSimpleGUI as sg
 
 from source.constants import github_repo_url, software_name, version, build_date
 

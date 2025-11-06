@@ -1,6 +1,6 @@
 import webbrowser
 import requests
-import PySimpleGUI as Sg
+import FreeSimpleGUI as sg
 
 from source.constants import software_name, latest_version_url
 
@@ -12,7 +12,7 @@ def get_latest_tag_version():
 
 def check_for_updates(v):
     if v != get_latest_tag_version():
-        pressed = Sg.popup_yes_no('A newer Version of the ' + software_name + ' is available.\n'
+        pressed = sg.popup_yes_no('A newer Version of the ' + software_name + ' is available.\n'
                                   'For proper functionality and new features please consider downloading the newest '
                                   'version. \nDo you want to get to the download page?',
                                   keep_on_top=True,
