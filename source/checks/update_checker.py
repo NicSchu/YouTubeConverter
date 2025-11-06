@@ -1,8 +1,7 @@
 import webbrowser
 import requests
-import FreeSimpleGUI as sg
 
-from source.constants import software_name, latest_version_url
+from source.helpers.constants import software_name, latest_version_url
 
 
 def get_latest_tag_version():

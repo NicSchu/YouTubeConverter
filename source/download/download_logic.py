@@ -3,18 +3,12 @@ import os.path
 import subprocess
 import threading
 
-from pytube import YouTube
+from pytubefix import YouTube
 from pytube import Playlist
 
-from source.components.menu import handle_about_click, handle_settings_click
-from source.helpers.constants import software_name, version
-from source.components.layout import get_layout
-from source.checks.update_checker import check_for_updates
-from source.checks.url_checker import is_correct_url
 from source.components.popups import playlist_popup
-from source.helpers.json_helper import save_to_json, load_from_json
 from source.helpers.progress import get_time_code_in_seconds, get_time_code
-from source.helpers.helper import get_from_clipboard, copy_to_clipboard, get_clickable_elements, open_download_folder, \
+from source.helpers.helper import get_clickable_elements, open_download_folder, \
     find_filename
 
 
@@ -73,7 +67,6 @@ def progressbar(stream=None, chunk=None, remaining=None):
 
 def complete():
     window["PROGRESS"].update(visible=False)
-
 
 # ------------------------- converting -------------------------
 def convert_to_format(video, audio_format, duration):
@@ -136,39 +129,3 @@ def prepare_download():
     if download_playlist is not None:
         thread = threading.Thread(target=download_thread(download_playlist == 'Yes'), daemon=True)
         thread.start()
-
-
-# ------------------------- main -------------------------
-if __name__ == '__main__':
-    # Sg.theme_previewer()
-    sg.set_options(theme="DarkGrey14")
-    run = check_for_updates(version)
-    settings = load_from_json()
-    window = sg.Window(software_name + ' ' + version, get_layout(settings))
-
-    while run:
-        event, values = window.read()
-        if event == "Exit" or event == sg.WIN_CLOSED:
-            break
-        elif event == "DOWNLOAD":
-            link = values["LINK"]
-            directory = values["FOLDER"]
-            if link == "" or not is_correct_url(link):
-                print_to_multi("The link entered is not a working YouTube Link!", "red")
-            elif directory == "":
-                print_to_multi("Please enter a path for the download!", "red")
-            else:
-                prepare_download()
-        elif event == "About":
-            handle_about_click()
-        elif event == "Settings":
-            handle_settings_click(window, values)
-        elif event == 'Copy':
-            copy_to_clipboard(values['LINK'])
-        elif event == 'Paste':
-            window['LINK'].update(get_from_clipboard())
-        elif event == 'Clear':
-            window['LINK'].update('')
-        save_to_json(values)
-
-    window.close()

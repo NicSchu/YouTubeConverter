@@ -1,7 +1,7 @@
 import webbrowser
 import FreeSimpleGUI as sg
 
-from source.constants import github_repo_url, software_name, version, build_date
+from source.helpers.constants import github_repo_url, software_name, version, build_date
 
 
 def handle_about_click():

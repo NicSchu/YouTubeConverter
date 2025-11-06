@@ -1,11 +1,81 @@
-## Simple YouTubeConverter
+# Youtubeconverter app
 
-This is a little fun project, because I wanted to do my own simple YouTube Converter without ads.
-This Converter is written in Python using [PyTube](https://pytube.io/en/latest/) for downloading and [ffmpeg](https://www.ffmpeg.org/)
-for converting the downloaded Videos. The GUI is made with [PySimpleGUI](https://pysimplegui.readthedocs.io/en/latest/).
+## Run the app
 
-Checkout the download section to find the latest release. You can download the program or a onefile version of it (plus the additional ffmpeg executable).
-To use simply download, extract and put it in a directory of your choice. Each download contains a windows executable.
+### uv
 
-### Download
-- [Latest release](https://github.com/NicSchu/YouTubeConverter/releases/latest)
+Run as a desktop app:
+
+```
+uv run flet run
+```
+
+Run as a web app:
+
+```
+uv run flet run --web
+```
+
+### Poetry
+
+Install dependencies from `pyproject.toml`:
+
+```
+poetry install
+```
+
+Run as a desktop app:
+
+```
+poetry run flet run
+```
+
+Run as a web app:
+
+```
+poetry run flet run --web
+```
+
+For more details on running the app, refer to the [Getting Started Guide](https://flet.dev/docs/getting-started/).
+
+## Build the app
+
+### Android
+
+```
+flet build apk -v
+```
+
+For more details on building and signing `.apk` or `.aab`, refer to the [Android Packaging Guide](https://flet.dev/docs/publish/android/).
+
+### iOS
+
+```
+flet build ipa -v
+```
+
+For more details on building and signing `.ipa`, refer to the [iOS Packaging Guide](https://flet.dev/docs/publish/ios/).
+
+### macOS
+
+```
+flet build macos -v
+```
+
+For more details on building macOS package, refer to the [macOS Packaging Guide](https://flet.dev/docs/publish/macos/).
+
+### Linux
+
+```
+flet build linux -v
+```
+
+For more details on building Linux package, refer to the [Linux Packaging Guide](https://flet.dev/docs/publish/linux/).
+
+### Windows
+
+```
+flet build windows -v
+```
+
+For more details on building Windows package, refer to the [Windows Packaging Guide](https://flet.dev/docs/publish/windows/).

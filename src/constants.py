@@ -2,7 +2,7 @@ from datetime import date
 
 
 # ---------------------- variables ----------------------
-version = 'v1.3.1'
+version = '2.0.0'
 build_date = date.today()
 software_name = 'Youtube Converter'
 latest_version_url = 'https://github.com/NicSchu/YouTubeConverter/releases/latest'
