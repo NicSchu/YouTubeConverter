@@ -34,9 +34,10 @@ def main(page: ft.Page):
 
 
     def download_action(e: ft.ControlEvent):
-        title, abr = download_stream(page)
-        controls["log"].controls.append(ft.Text(f"- {title} - ({abr})"))
-        page.update()
+        log = controls["log"]
+        on_download(page, log)
+        # controls["log"].controls.append(ft.Text(f"- {title} - ({abr})"))
+        # page.update()
         if page.session.get(Settings.OPEN_DIRECTORY.value):
             subprocess.run(f'explorer "{page.session.get(Settings.DIRECTORY.value)}"')
 
@@ -58,7 +59,7 @@ def main(page: ft.Page):
     page.add(
         ft.Column(controls=[
             ft.Row(controls=[
-                ft.TextField(label="YouTube URL", expand=True, data="URL", on_blur=on_change_field),
+                ft.TextField(label="YouTube URL", expand=True, data=Session.URL.value, on_blur=on_change_field),
             ]),
             ft.Row(controls=[
                 controls[Settings.DIRECTORY.value],
@@ -97,3 +98,4 @@ ft.app(main)
 # Ensure quality + format selection works together.
 # Improve console layout.
 # find a solution like “folder opened” flag to avoid multiple explorer windows.
+# pack everything into executable/program dir

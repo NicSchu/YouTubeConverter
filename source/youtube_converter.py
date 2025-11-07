@@ -10,7 +10,7 @@ from source.components.menu import handle_about_click, handle_settings_click
 from source.helpers.constants import software_name, version
 from source.components.layout import get_layout
 from source.checks.update_checker import check_for_updates
-from source.checks.url_checker import is_correct_url
+from src.url_checker import is_correct_url
 from source.components.popups import playlist_popup
 from source.helpers.json_helper import save_to_json, load_from_json
 from source.helpers.progress import get_time_code_in_seconds, get_time_code
